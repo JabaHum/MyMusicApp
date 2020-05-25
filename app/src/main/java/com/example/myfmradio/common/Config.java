@@ -6,7 +6,5 @@ public class Config {
     public static String format = "json";
     public static String toptracks = "chart.gettoptracks";
 
-    //http://ws.audioscrobbler.com/2.0/?method=album.getinfo&api_key=738ce666292215cb837a832d5727ed4a&artist=Cher&album=Believe&format=json
-
 
 }
