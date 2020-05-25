@@ -1,6 +1,7 @@
 package com.example.myfmradio.activities;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,13 +13,15 @@ import com.example.myfmradio.models.TopTracksData;
 import com.example.myfmradio.models.TrackData;
 import com.example.myfmradio.network.APIClient;
 import com.example.myfmradio.network.APIInterface;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.Gson;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 
 import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,28 +61,36 @@ public class RadioListActivity extends AppCompatActivity {
 
         Call<String> call = apiInterface.getTopTracks(Config.toptracks, Config.api_key, Config.format);
 
-
-        Timber.d("call%s",call);
-
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(@NotNull Call<String> call, @NotNull Response<String> response) {
+                Timber.d("data%s", response.body());
+                if (response.isSuccessful()) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(new Gson().toJson(response.body()));
+                        String msg = jsonObject.getString("tracks");
+                        Timber.d("data%s", msg);
 
-                Timber.d("data%s", response.toString());
+                        Moshi moshi = new Moshi.Builder().build();
+                        JsonAdapter<TopTracksData> jsonAdapter = moshi.adapter(TopTracksData.class);
 
-               /* JsonParser jsonParser = new JsonParser();
+                        TopTracksData post = jsonAdapter.fromJson(msg);
 
-                assert response.body() != null;
-                JsonObject jsonObject = jsonParser.parse(response.body()).getAsJsonObject();
+                        Log.i("dataResponse",post.getTrack().toString());
 
-                Moshi moshi = new Moshi.Builder().build();
-                JsonAdapter<TopTracksData> jsonAdapter = moshi.adapter(TopTracksData.class);*/
 
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+
+                }
 
             }
 
             @Override
             public void onFailure(@NotNull Call<String> call, @NotNull Throwable t) {
+                Timber.d("dataError%s", call.toString());
             }
         });
 
