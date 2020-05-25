@@ -10,7 +10,10 @@ import retrofit2.http.Query;
 public interface APIInterface {
 
     @GET("/2.0/")
-    Call<JsonObject> getTopTracks(@Query("method") String toptracks, @Query("api_key") String api_key, @Query("format") String format);
+    Call<String> getTopTracks(@Query("method") String toptracks,
+                              @Query("api_key") String api_key,
+                              @Query("format") String format);
 
 
+    // @GET("?method=artist.search&format=json&api_key=" + API_KEY)
 }
